@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections.abc import Iterable
 from datetime import datetime
+from typing import TextIO
 
 from . import __version__
 from .parsers import parse
@@ -18,8 +20,8 @@ def _n(x: int) -> str:
     return f"{x:,}".replace(",", ".")
 
 
-def run(lines, fmt: str, detector: StabilityDetector, plates: list[str], out=None, price: int = 0,
-        impurity: float = 0.0) -> list[Ticket]:
+def run(lines: Iterable[str], fmt: str, detector: StabilityDetector, plates: list[str], out: TextIO | None = None,
+        price: int = 0, impurity: float = 0.0) -> list[Ticket]:
     tickets: list[Ticket] = []
     queue = list(plates)
     current: Ticket | None = None
@@ -36,7 +38,8 @@ def run(lines, fmt: str, detector: StabilityDetector, plates: list[str], out=Non
         lan = current.record(kg)
         print(f"[{datetime.now():%H:%M:%S}] {current.plate}: cân {'lần 1' if lan == 'lan_1' else 'lần 2'} = {_n(kg)} kg")
         if current.complete:
-            line = f"    → hàng {_n(current.net_kg)} kg, trừ {_n(current.deduction_kg)} kg, tính {_n(current.payable_kg)} kg"
+            net, payable = current.net_kg or 0, current.payable_kg or 0
+            line = f"    → hàng {_n(net)} kg, trừ {_n(current.deduction_kg)} kg, tính {_n(payable)} kg"
             if current.amount:
                 line += f" = {_n(current.amount)} đ"
             print(line)
