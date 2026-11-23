@@ -5,4 +5,4 @@ from .stability import StabilityDetector
 from .ticket import Ticket
 
 __all__ = ["Reading", "StabilityDetector", "Ticket", "parse"]
-__version__ = "0.1.0"
+__version__ = "0.2.0"
