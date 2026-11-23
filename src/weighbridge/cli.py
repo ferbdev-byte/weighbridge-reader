@@ -21,11 +21,14 @@ def _n(x: int) -> str:
 
 
 def run(lines: Iterable[str], fmt: str, detector: StabilityDetector, plates: list[str], out: TextIO | None = None,
-        price: int = 0, impurity: float = 0.0) -> list[Ticket]:
+        price: int = 0, impurity: float = 0.0, raw_log: TextIO | None = None) -> list[Ticket]:
     tickets: list[Ticket] = []
     queue = list(plates)
     current: Ticket | None = None
     for line in lines:
+        if raw_log:  # lưu nguyên bản tin để đối chiếu khi có tranh chấp số cân
+            raw_log.write(f"{datetime.now().isoformat(timespec='milliseconds')}\t{line.rstrip()}\n")
+            raw_log.flush()
         r = parse(line, fmt)
         if r is None:
             continue
@@ -65,18 +68,21 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--price", type=int, default=0, help="đơn giá đồng/kg")
     p.add_argument("--impurity", type=float, default=0.0, help="% trừ tạp chất")
     p.add_argument("-o", "--out", help="ghi phiếu cân ra file JSON Lines")
+    p.add_argument("--raw-log", help="ghi nguyên văn mọi bản tin từ đầu cân, kèm thời điểm (để đối chiếu)")
     args = p.parse_args(argv)
 
     lines = simulate() if args.simulate else serial_lines(args.port, args.baud)
     det = StabilityDetector(args.samples, args.tolerance)
     out = open(args.out, "a", encoding="utf-8") if args.out else None
+    raw = open(args.raw_log, "a", encoding="utf-8") if args.raw_log else None
     try:
-        run(lines, args.format, det, args.plate, out, args.price, args.impurity)
+        run(lines, args.format, det, args.plate, out, args.price, args.impurity, raw)
     except KeyboardInterrupt:
         pass
     finally:
-        if out:
-            out.close()
+        for f in (out, raw):
+            if f:
+                f.close()
     return 0
 
 

@@ -49,6 +49,7 @@ weighbridge --simulate                         # chạy thử, không cần đ�
 weighbridge --port COM3 --baud 9600            # đọc cân thật
 weighbridge --port COM3 --format reversed      # đầu cân XK3190-A9
 weighbridge --port COM3 --samples 8 --tolerance 20 --plate 51C-123.45 -o phieu.jsonl
+weighbridge --port COM3 --raw-log can-tho.log     # lưu nguyên văn mọi bản tin để đối chiếu khi có tranh chấp
 ```
 
 Mẹo: xem đầu cân đang ở cổng COM nào trong *Device Manager → Ports (COM & LPT)*. Đa số đầu cân mặc định chạy 9600 baud, 8N1.
