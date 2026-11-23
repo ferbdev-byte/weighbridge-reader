@@ -18,10 +18,10 @@ class StabilityDetector:
     samples: int = 5
     tolerance_kg: float = 10.0
     min_kg: float = 50.0          # dưới mức này coi như bàn cân trống
-    _window: deque = field(default_factory=deque)
+    _window: deque[Reading] = field(default_factory=deque)
     _locked: float | None = None
 
-    def feed(self, r: Reading) -> float | None:
+    def feed(self, r: Reading) -> int | None:
         """Đưa một lần đọc vào. Trả về khối lượng chốt (kg) đúng một lần cho mỗi lần cân, còn lại None."""
         if r.overload or r.kg < self.min_kg:
             self._window.clear()

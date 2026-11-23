@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from typing import Any
 
 
 @dataclass
@@ -24,6 +25,7 @@ class Ticket:
             self.times["lan_1"] = at.isoformat(timespec="seconds")
             return "lan_1"
         first = self.gross_kg if self.gross_kg is not None else self.tare_kg
+        assert first is not None
         self.gross_kg, self.tare_kg = max(first, kg), min(first, kg)
         self.times["lan_2"] = at.isoformat(timespec="seconds")
         return "lan_2"
@@ -34,7 +36,9 @@ class Ticket:
 
     @property
     def net_kg(self) -> int | None:
-        return None if not self.complete else self.gross_kg - self.tare_kg
+        if self.gross_kg is None or self.tare_kg is None:
+            return None
+        return self.gross_kg - self.tare_kg
 
     @property
     def deduction_kg(self) -> int:
@@ -48,7 +52,7 @@ class Ticket:
     def amount(self) -> int | None:
         return None if self.payable_kg is None else self.payable_kg * self.unit_price
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d.update(net_kg=self.net_kg, deduction_kg=self.deduction_kg, payable_kg=self.payable_kg, amount=self.amount)
         return d

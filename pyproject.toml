@@ -21,7 +21,7 @@ dependencies = []
 
 [project.optional-dependencies]
 serial = ["pyserial>=3.5"]
-dev = ["pytest>=8", "ruff>=0.5"]
+dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.10", "types-pyserial"]
 
 [project.scripts]
 weighbridge = "weighbridge.cli:main"
@@ -30,7 +30,7 @@ weighbridge = "weighbridge.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-weighbridge = ["*.ttf", "*.json"]
+weighbridge = ["py.typed", "*.ttf", "*.json"]
 
 [tool.ruff]
 line-length = 125
@@ -42,3 +42,8 @@ select = ["E", "F", "W", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+files = ["src"]
