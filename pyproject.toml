@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weighbridge-reader"
+version = "0.1.0"
+description = "Đọc số cân từ đầu cân điện tử qua cổng COM (RS232), nhận biết cân đã ổn định, tính khối lượng hàng."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Võ Ngọc Cường" }]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+serial = ["pyserial>=3.5"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+weighbridge = "weighbridge.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+weighbridge = ["*.ttf", "*.json"]
+
+[tool.ruff]
+line-length = 125
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
